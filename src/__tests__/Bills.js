@@ -60,9 +60,10 @@ describe("Given I am connected as an employee", () => {
         eye.addEventListener('click', () => {
           handleClick(eye);
         })
-        // simulate && expect result
+
+        // simulate && expect result --- PB le test passera alors que la fonctionnalité aura été supprimée dans Bills
         userEvent.click(eye);
-        expect(handleClick).toHaveBeenCalled()
+        expect(handleClick).toHaveBeenCalled();
 
         // Added data-testid to modal in billsUI in order to check if truthy
         const modale = screen.getByTestId('modaleFile')
@@ -81,7 +82,7 @@ describe("Given I am connected as an employee", () => {
         document, onNavigate, store: null, localStorage: window.localStorage
       })
       const handleClick = jest.fn(bill.handleClickNewBill);
-      bill.handleClickNewBill = (e) => e.preventDefault();
+      expect(btn).toBeTruthy();
       btn.addEventListener("click", handleClick);
       fireEvent.click(btn);
       expect(screen.getAllByText('Envoyer une note de frais')).toBeTruthy(); // should arrive on a new page
@@ -136,8 +137,5 @@ describe("Given I am connected as an employee", () => {
       const message = await screen.getByText(/Erreur 500/)
       expect(message).toBeTruthy()
     })
-
-    // add new bill
-
   })
 })

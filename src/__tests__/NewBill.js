@@ -2,7 +2,8 @@
  * @jest-environment jsdom
  */
 
-import { screen, fireEvent } from "@testing-library/dom"
+import { screen, fireEvent, waitFor } from "@testing-library/dom";
+import userEvent from "@testing-library/user-event";
 import NewBillUI from "../views/NewBillUI.js"
 import NewBill from "../containers/NewBill.js"
 import mockStore from "../__mocks__/store"
@@ -35,7 +36,6 @@ describe("Given I am connected as an employee", () => {
 
     describe("When I upload a new file", () => {
       test("Then a file is added to formData", async () => {
-        // Create root div, used by rooter
         document.body.innerHTML = NewBillUI();
         const newBill = new NewBill({ document, onNavigate, store, localStorage: window.localStorage })
 
@@ -56,18 +56,22 @@ describe("Given I am connected as an employee", () => {
     });
 
     describe("When I send a new bill", () => {
-      test("Then All fields have a value", () => {
-        jest.spyOn(mockStore, "bills")
+      test("posts to API ", async () => {
+        jest.spyOn(mockStore, "bills");
+        const root = document.createElement("div");
+        root.setAttribute("id", "root");
         document.body.innerHTML = `<div id="root"> </div>`;
         router();
-        window.onNavigate(ROUTES_PATH.NewBill);
-        // Need to get the button
-
-        // J'ai besoin de valider le formulaire
-
+        // Create root div, used by rooter
+        window.onNavigate(ROUTES_PATH.NewBill)
+        const newBill = new NewBill({ document, onNavigate, store, localStorage: window.localStorage })
+        const button = screen.getByTestId('form-new-bill');
+        const handleSubmit = jest.fn(newBill.handleSubmit);
+        button.addEventListener('submit', handleSubmit);
+        fireEvent.submit(button);
+        expect(handleSubmit).toHaveBeenCalled();
       })
     })
-    // Je dois tester que tout ait une value ,
   })
-
 })
+
